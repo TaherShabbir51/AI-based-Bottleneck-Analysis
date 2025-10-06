@@ -1,0 +1,9 @@
+case-A(with-verification).py
+parallel-machines.py
+series-machine(back-forth).py
+series-machines.py
+series-machines(batch).py
+series-machines(finite).py
+series-machines(multiple).py
+series-machines(priority).py
+Main.py
