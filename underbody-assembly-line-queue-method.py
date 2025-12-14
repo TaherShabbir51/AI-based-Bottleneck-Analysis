@@ -17,8 +17,8 @@ VARIANT_SCALING = {"X": 0.95, "Y": 1.05}
 DEFECT_PROB_X = [0.02, 0.01, 0.005, 0.01, 0.0, 0.015, 0.0]
 DEFECT_PROB_Y = [0.01, 0.02, 0.01, 0.015, 0.0, 0.02, 0.0]
 
-MTBF_GEOMETRY, MTTR_GEOMETRY = 147.33 * 60, 3.438 * 60
-MTBF_RESPOT, MTTR_RESPOT = 162.75 * 60, 1.38 * 60
+MTBF_GEOMETRY, MTTR_GEOMETRY = 147.33 * 60, 3.438 * 60 #for station 2, 4
+MTBF_RESPOT, MTTR_RESPOT = 162.75 * 60, 1.38 * 60 #for station 3, 6
 
 BREAKS = [(2*3600, 600), (4*3600, 1200), (6*3600, 600)]
 
@@ -29,7 +29,7 @@ class Station:
         self.env = env
         self.name = name
         self.base_time = base_time
-        self.resource = simpy.Resource(env, capacity=1)
+        self.resource = simpy.Resource(env, capacity=1) #one job at a time
         self.available = True
         self.busy_time = 0
         self.failures = 0
@@ -37,23 +37,23 @@ class Station:
         self.repairing = False
 
     def process(self, job_type):
-        mean_time = self.base_time * VARIANT_SCALING[job_type]
-        proc_time = max(1, random.normalvariate(mean_time, 0.05 * mean_time))
+        mean_time = self.base_time * VARIANT_SCALING[job_type] #checking model X or Y
+        proc_time = max(1, random.normalvariate(mean_time, 0.05 * mean_time)) #applying randomness
         start = self.env.now
         yield self.env.timeout(proc_time)
         self.busy_time += self.env.now - start
 
     def monitor_queue(self):
         while True:
-            self.queue_log.append((self.env.now, len(self.resource.queue)))
-            yield self.env.timeout(30)
+            self.queue_log.append((self.env.now, len(self.resource.queue))) #recording time and qty. waiting in queue
+            yield self.env.timeout(30) #waiting 30 seconds before checking again, sleep mode
 
 
 # ---------------- FAILURE / BREAK EVENTS ----------------
 def failure_generator(env, station, mtbf, mttr):
     while True:
         yield env.timeout(random.expovariate(1 / mtbf))
-        if not station.repairing:
+        if not station.repairing: #safety check of machine break status
             station.failures += 1
             station.repairing = True
             station.available = False
@@ -146,7 +146,7 @@ def run_simulation(seed=1):
 
 # ---------------- EXPERIMENT DRIVER ----------------
 if __name__ == "__main__":
-    REPS = 100
+    REPS = 100 #Monte Carlo Simulation
     results = [run_simulation(seed=i) for i in range(REPS)]
 
     avg_throughput = statistics.mean(r["Throughput"] for r in results)
@@ -168,7 +168,7 @@ if __name__ == "__main__":
         print(f"{i+1:^8}| {avg_util[i]*100:>10.2f}% | {avg_queue[i]:>9.2f} | {avg_fail[i]:>8.2f}")
 
     bottlenecks = [r["Bottleneck"] for r in results]
-    dominant_bn = max(set(bottlenecks), key=bottlenecks.count)
+    dominant_bn = max(set(bottlenecks), key=bottlenecks.count) #selecting bottleneck station based on 100 runs
     print(f"\nLikely Bottleneck Station: Station {dominant_bn}")
 
     # ---------- SAVE TO CSV ----------
