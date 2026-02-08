@@ -1,0 +1,70 @@
+{
+  "simulation": {
+    "total_shift_duration": 28800,
+    "warm_up": 400,
+    "pallets": 13,
+    "buffer_capacity": 1,
+    "arrival_mean": 56.2,
+    "arrival_sd": 3,
+    "reps": 100
+  },
+
+  "analysis": {
+    "window_size": 1800,
+    "compute_correlations": true,
+    "compute_plots": true,
+    "num_windows": 16
+  },
+
+  "breaks": [
+    [7200, 600],
+    [14400, 1200],
+    [21600, 600]
+  ],
+
+  "models": {
+    "X": {
+      "cycle_times": [36.1, 47.3, 9.6, 47.3, 9.6, 47.3, 16.0],
+      "variant_scaling": 1,
+      "reliability": {
+        "1": [11086.2, 135.6],
+        "2": [8839.8, 206.28],
+        "3": [9765.0, 82.8],
+        "4": [8839.8, 206.28],
+        "5": null,
+        "6": [9484.8, 150.6],
+        "7": [11086.2, 135.6]
+      }
+    },
+
+    "Y": {
+      "cycle_times": [36.1, 47.3, 9.6, 47.3, 9.6, 47.3, 16.0],
+      "variant_scaling": 1,
+      "reliability": {
+        "1": [11086.2, 135.6],
+        "2": [8839.8, 206.28],
+        "3": [9765.0, 82.8],
+        "4": [8839.8, 206.28],
+        "5": null,
+        "6": [9484.8, 150.6],
+        "7": [11086.2, 135.6]
+      }
+    }
+  
+  },
+
+  "mix": {
+    "model_probabilities": {
+      "X": 0.2,
+      "Y": 0.8      
+      }
+  },
+
+  "model_sequence": [
+     ["X", 7200],
+     ["Y", 7200],
+     ["Mix", 14400]
+  ]
+
+  
+}
